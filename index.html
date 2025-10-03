@@ -4,88 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscrição - Dia da Mulher | Hospital Moinhos de Vento</title>
-    <style>
-        /* CSS Básico (Ajuste conforme o branding do hospital) */
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f7f6;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .container {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 500px;
-        }
-        h1 {
-            color: #004d40; /* Cor Institucional (Verde escuro) */
-            text-align: center;
-            margin-bottom: 5px;
-        }
-        h2 {
-            color: #4CAF50; /* Verde claro */
-            text-align: center;
-            font-weight: normal;
-            margin-bottom: 30px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #333;
-        }
-        input[type="text"], input[type="email"], input[type="tel"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: #004d40;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 16px;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #00332c;
-        }
-        #message {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 4px;
-            display: none;
-            text-align: center;
-            font-weight: bold;
-        }
-        .success {
-            background-color: #e8f5e9;
-            color: #4CAF50;
-            border: 1px solid #4CAF50;
-        }
-        .error {
-            background-color: #ffebee;
-            color: #e53935;
-            border: 1px solid #e53935;
-        }
-        .loading {
-            cursor: wait;
-            opacity: 0.7;
-        }
-    </style>
+    
+    <link rel="stylesheet" href="style.css"> 
+    
 </head>
 <body>
     <div class="container">
@@ -109,55 +30,47 @@
     </div>
 
     <script>
-        // O URL abaixo DEVE ser substituído pelo URL do Google Apps Script que você criará
-        const APP_SCRIPT_URL = '### COLE AQUI O URL DO SEU APPS SCRIPT DEPLOYADO ###'; 
+        const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzlFDDrXzdXlZEisE0FSrBCQf5DSN2bmxSJUBvr7wHURlzwBWFPgBYs1oxSQoCb5q2VSA/exec'; 
 
         const form = document.getElementById('registrationForm');
         const submitButton = document.getElementById('submitButton');
         const messageDiv = document.getElementById('message');
 
         form.addEventListener('submit', function(event) {
-            event.preventDefault(); // Impede o envio padrão do formulário
+            event.preventDefault();
 
-            // Prepara os dados para envio
             const formData = new FormData(form);
             const searchParams = new URLSearchParams();
             for (const pair of formData) {
                 searchParams.append(pair[0], pair[1]);
             }
 
-            // Bloqueia o botão e mostra o feedback
+            // Lógica de envio e feedback (JavaScript)
             submitButton.disabled = true;
             submitButton.textContent = 'Enviando...';
             submitButton.classList.add('loading');
             messageDiv.style.display = 'none';
 
-            // Envia os dados para o Google Apps Script via POST
             fetch(APP_SCRIPT_URL, {
                 method: 'POST',
-                // O Apps Script espera dados codificados como 'application/x-www-form-urlencoded'
                 body: searchParams 
             })
             .then(response => response.json())
             .then(data => {
                 if (data.result === 'success') {
-                    // Sucesso na inscrição
                     messageDiv.textContent = data.message || 'Inscrição realizada com sucesso!';
                     messageDiv.className = 'success';
-                    form.reset(); // Limpa o formulário
+                    form.reset();
                 } else {
-                    // Erro retornado pelo script
                     throw new Error(data.message || 'Erro desconhecido ao processar inscrição.');
                 }
             })
             .catch(error => {
-                // Erro na requisição (rede, CORS, ou script)
                 console.error('Erro:', error);
                 messageDiv.textContent = 'Erro ao enviar: ' + error.message;
                 messageDiv.className = 'error';
             })
             .finally(() => {
-                // Restaura o botão e mostra a mensagem
                 submitButton.disabled = false;
                 submitButton.textContent = 'Confirmar Inscrição';
                 submitButton.classList.remove('loading');
